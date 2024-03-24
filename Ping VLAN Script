@@ -1,0 +1,26 @@
+function Test-VlanPing {
+    param (
+        [string]$VlanIpAddress,
+        [int]$Timeout = 1000,  # Timeout in milliseconds
+        [int]$Count = 4        # Number of ping requests
+    )
+
+    $ping = New-Object System.Net.NetworkInformation.Ping
+    $pingOptions = New-Object System.Net.NetworkInformation.PingOptions
+
+    Write-Host "Pinging VLAN at $VlanIpAddress..."
+
+    try {
+        $reply = $ping.Send($VlanIpAddress, $Timeout, [byte[]]::new(32), $pingOptions)
+        if ($reply.Status -eq 'Success') {
+            Write-Host "Ping successful. Roundtrip time: $($reply.RoundtripTime) ms"
+        } else {
+            Write-Host "Ping failed. Status: $($reply.Status)"
+        }
+    } catch {
+        Write-Host "Error: $_"
+    }
+}
+
+# Usage example
+Test-VlanPing -VlanIpAddress "192.168.1.1"
